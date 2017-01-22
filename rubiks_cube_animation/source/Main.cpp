@@ -318,7 +318,6 @@ int main()
 		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
 	
-		GLint count = 0;
 		//draw on context
 		glBindVertexArray(VAO);
 		for (GLuint i = 0; i < 27; i++)
@@ -326,7 +325,7 @@ int main()
 			glm::mat4 model;
 			model = glm::translate(model, cubie_positions[i]);
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-		
+			GLint count = 0;
 			//now render each face
 			for (GLuint j = 0; j < 6; j++)
 			{
