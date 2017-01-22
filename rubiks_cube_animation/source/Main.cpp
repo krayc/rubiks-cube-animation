@@ -15,7 +15,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void do_movement();
 //void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-
+void load_texture(GLuint textureName, const GLchar * texturePath);
+void loadAllTextures();
 
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -29,7 +30,13 @@ bool keys[1024];
 GLfloat deltaTime = 0.0f;	//difference in time b/w current and last frame
 GLfloat lastFrame = 0.0f; 
 
-GLuint textures[];
+GLuint yellowTexture;
+GLuint redTexture;
+GLuint blueTexture;
+GLuint whiteTexture;
+GLuint greenTexture;
+GLuint orangeTexture;
+GLuint textures[6];
 
 int main()
 {
@@ -472,4 +479,36 @@ void scroll_callback(GLFWwindow * window, double xoffset, double yoffset)
 	{
 		fov = 45.0f;
 	}
+}
+
+void loadAllTextures()
+{
+	load_texture(yellowTexture, "images/yellow.jpg");
+	load_texture(whiteTexture, "images/white.jpg");
+	load_texture(orangeTexture, "images/orange.jpg");
+	load_texture(redTexture, "images/red.jpg");
+	load_texture(greenTexture, "images/green.jpg");
+	load_texture(blueTexture, "images/blue.jpg");
+}
+
+
+void load_texture(GLuint textureName, const GLchar * texturePath)
+{
+	glGenTextures(1, &textureName);
+	//bind texture to 2D, so that any 2D manipulation will affect this texture
+	glBindTexture(GL_TEXTURE_2D, textureName);
+	//texture wrapping s,t,r (equivalent to x,y,z)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// texture filter
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// image setup
+	int width, height;
+	unsigned char* image = SOIL_load_image(texturePath, &width, &height, 0, SOIL_LOAD_RGB);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	//mipmap generation
+	glGenerateMipmap(GL_TEXTURE_2D);
+	SOIL_free_image_data(image);
+	glBindTexture(GL_TEXTURE_2D, 0); //unbind
 }
