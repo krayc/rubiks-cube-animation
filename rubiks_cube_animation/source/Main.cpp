@@ -15,7 +15,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void do_movement();
 //void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void load_texture(GLuint textureName, const GLchar * texturePath);
+GLuint load_texture(const GLchar * texturePath);
 void loadAllTextures();
 
 // Window dimensions
@@ -30,12 +30,6 @@ bool keys[1024];
 GLfloat deltaTime = 0.0f;	//difference in time b/w current and last frame
 GLfloat lastFrame = 0.0f; 
 
-GLuint yellowTexture;
-GLuint redTexture;
-GLuint blueTexture;
-GLuint whiteTexture;
-GLuint greenTexture;
-GLuint orangeTexture;
 GLuint textures[6];
 
 int main()
@@ -259,48 +253,7 @@ int main()
 	glBindVertexArray(0);
 	#pragma endregion Buffer Objects
 
-	// Load and create a texture 
-	GLuint texture1;
-	GLuint texture2;
-	// ====================
-	// Texture 1
-	// ====================
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1); // All upcoming GL_TEXTURE_2D operations now have effect on our texture object
-											// Set our texture parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// Set texture filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Load, create texture and generate mipmaps
-	int width, height;
-	unsigned char* image = SOIL_load_image("images/blue.jpg", &width, &height, 0, SOIL_LOAD_RGB);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	SOIL_free_image_data(image);
-	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
-									 // ===================
-									 // Texture 2
-									 // ===================
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-	// Set our texture parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// Set texture filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Load, create texture and generate mipmaps
-	image = SOIL_load_image("images/white.png", &width, &height, 0, SOIL_LOAD_RGB);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	SOIL_free_image_data(image);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	//loadAllTextures();
-	// Uncommenting this call will result in wireframe polygons.
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	loadAllTextures();
 
 	//since the projection matrix rarely changes set it once instead of per frame
 	
@@ -364,41 +317,27 @@ int main()
 		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
-		// Bind Textures using texture units
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
-		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);
-		//create transformations
-		//glm::mat4 trans;
-		
-		//trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-		//trans = glm::rotate(trans, glm::radians((GLfloat)glfwGetTime() * 50.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		//set matrix
-		//GLuint transformLoc = glGetUniformLocation(ourShader.Program, "transform");
-		
-		//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+	
 		GLint count = 0;
 		//draw on context
 		glBindVertexArray(VAO);
 		for (GLuint i = 0; i < 27; i++)
 		{
-			
 			glm::mat4 model;
 			model = glm::translate(model, cubie_positions[i]);
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+		
 			//now render each face
 			for (GLuint j = 0; j < 6; j++)
 			{
+				//apply texture to each face
+				//glActiveTexture(GL_TEXTURE0 + j);
+				glBindTexture(GL_TEXTURE_2D, textures[j]);
+				glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture"), 0);
 				glDrawArrays(GL_TRIANGLES, 0, count);
 				count += 6;
 			}
 		}
-		//last parameter is # of vertices
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		/* the reason we use a double buffer here is as follows:
@@ -483,20 +422,21 @@ void scroll_callback(GLFWwindow * window, double xoffset, double yoffset)
 
 void loadAllTextures()
 {
-	load_texture(yellowTexture, "images/yellow.jpg");
-	load_texture(whiteTexture, "images/white.jpg");
-	load_texture(orangeTexture, "images/orange.jpg");
-	load_texture(redTexture, "images/red.jpg");
-	load_texture(greenTexture, "images/green.jpg");
-	load_texture(blueTexture, "images/blue.jpg");
+	textures[0] = load_texture("images/yellow.jpg");
+	textures[1] = load_texture("images/white.jpg");
+	textures[2] = load_texture("images/orange.jpg");
+	textures[3] = load_texture("images/red.jpg");
+	textures[4] = load_texture("images/green.jpg");
+	textures[5] = load_texture("images/blue.jpg");
 }
 
 
-void load_texture(GLuint textureName, const GLchar * texturePath)
+GLuint load_texture(const GLchar * texturePath)
 {
-	glGenTextures(1, &textureName);
+	GLuint texture;
+	glGenTextures(1, &texture);
 	//bind texture to 2D, so that any 2D manipulation will affect this texture
-	glBindTexture(GL_TEXTURE_2D, textureName);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	//texture wrapping s,t,r (equivalent to x,y,z)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -511,4 +451,5 @@ void load_texture(GLuint textureName, const GLchar * texturePath)
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(image);
 	glBindTexture(GL_TEXTURE_2D, 0); //unbind
+	return texture;
 }
