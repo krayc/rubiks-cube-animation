@@ -16,6 +16,7 @@ void do_movement();
 //void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
+
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -26,7 +27,9 @@ bool keys[1024];
 
 // Deltatime
 GLfloat deltaTime = 0.0f;	//difference in time b/w current and last frame
-GLfloat lastFrame = 0.0f;  	
+GLfloat lastFrame = 0.0f; 
+
+GLuint textures[];
 
 int main()
 {
@@ -77,67 +80,136 @@ int main()
 	Shader ourShader("source/shaders/default.vs", "source/shaders/default.frag");
 
 	#pragma region array data
-	//GLfloat vertices[] = {
-	//	// Positions          // Texture Coords
-	//	0.5f,  0.5f, 0.0f,   1.0f, 1.0f,   // Top Right
-	//	0.5f, -0.5f, 0.0f,   1.0f, 0.0f,   // Bottom Right
-	//	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f,   // Bottom Left
-	//	-0.5f,  0.5f, 0.0f,   0.0f, 1.0f    // Top Left 
-	//};
-	// Set up vertex data (and buffer(s)) and attribute pointers
-	GLfloat vertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	GLfloat texture_coordinates[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
 
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
 
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
+		1.0f, 0.0f,
 
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+
+
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 0.0f,
+		0.0f, 1.0f,
+
+
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 0.0f,
+		0.0f, 1.0f
 	};
-	//GLuint indices[] = {
-	//	0, 1, 3,  // first shape
-	//	1, 2, 3   // secon
-	//};
+	// setup vertex data
+	GLfloat vertices[] = {
+		//back
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f, 
+		0.5f,  0.5f, -0.5f, 
+		0.5f,  0.5f, -0.5f, 
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
 
-	//GLfloat texCoords[] = {
-	//	0.0f, 0.0f,  // Lower-left corner  
-	//	1.0f, 0.0f,  // Lower-right corner
-	//	0.5f, 1.0f   // Top-center corner
-	//};
+		//front
+		-0.5f, -0.5f,  0.5f,
+		0.5f, -0.5f,  0.5f, 
+		0.5f,  0.5f,  0.5f, 
+		0.5f,  0.5f,  0.5f, 
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+
+		//left
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+
+		//right
+		0.5f,  0.5f,  0.5f, 
+		0.5f,  0.5f, -0.5f, 
+		0.5f, -0.5f, -0.5f, 
+		0.5f, -0.5f, -0.5f, 
+		0.5f, -0.5f,  0.5f, 
+		0.5f,  0.5f,  0.5f, 
+
+		//bottom
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f, 
+		0.5f, -0.5f,  0.5f, 
+		0.5f, -0.5f,  0.5f, 
+		-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+
+		//top
+		-0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f, 
+		0.5f,  0.5f,  0.5f, 
+		0.5f,  0.5f,  0.5f, 
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+	};
+	glm::vec3 cubie_positions[] = {
+		//front face
+		glm::vec3(0.0f,  2.0f,  1.0f),
+		glm::vec3(1.0f,  2.0f,  1.0f),
+		glm::vec3(2.0f,  2.0f,  1.0f),
+		glm::vec3(0.0f,  1.0f,  1.0f),
+		glm::vec3(1.0f,  1.0f,  1.0f),
+		glm::vec3(2.0f,  1.0f,  1.0f),
+		glm::vec3(0.0f,  0.0f,  1.0f),
+		glm::vec3(1.0f,  0.0f,  1.0f),
+		glm::vec3(2.0f,  0.0f,  1.0f),
+		//middle layer
+		glm::vec3(0.0f,  2.0f,  0.0f),
+		glm::vec3(1.0f,  2.0f,  0.0f),
+		glm::vec3(2.0f,  2.0f,  0.0f),
+		glm::vec3(0.0f,  1.0f,  0.0f),
+		glm::vec3(1.0f,  1.0f,  0.0f),
+		glm::vec3(2.0f,  1.0f,  0.0f),
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(1.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  0.0f,  0.0f),
+		//back layer
+		glm::vec3(0.0f,  2.0f, -1.0f),
+		glm::vec3(1.0f,  2.0f, -1.0f),
+		glm::vec3(2.0f,  2.0f, -1.0f),
+		glm::vec3(0.0f,  1.0f, -1.0f),
+		glm::vec3(1.0f,  1.0f, -1.0f),
+		glm::vec3(2.0f,  1.0f, -1.0f),
+		glm::vec3(0.0f,  0.0f, -1.0f),
+		glm::vec3(1.0f,  0.0f, -1.0f),
+		glm::vec3(2.0f,  0.0f, -1.0f),
+	};
 	#pragma endregion array data
 
 	//setup VBO/VAO/EBO along with vertex attributes
@@ -146,20 +218,15 @@ int main()
 	//vertex array object - you must bind a VAO for OpenGL to actually render anything
 	//^very easy to switch between different vertex/attribute configurations
 	//element buffer object - stores indices (indexed drawing)
-	GLuint VBO, VAO, EBO;
+	GLuint VAO, EBO, vertex_buffer, texture_buffer;
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &vertex_buffer);
+	glGenBuffers(1, &texture_buffer);
 	//glGenBuffers(1, &EBO);
 	// bind VAO before anything else.
 	glBindVertexArray(VAO);
-	// copy vertices into a buffer that OpenGL reads
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	//copy indices into a buffer that OpenGL reads
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	//copy cube colours
-
 	/*first parameter we set in vertexShaderSource (position = 0)
 	* second parameter is size of vertex attribute
 	* third - type of data
@@ -168,70 +235,63 @@ int main()
 	* 6th - offset of where the vertex data begins in the array
 	*/
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
-	// Colour attribute
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	//glEnableVertexAttribArray(1);
-	// texture attributes - note the stride is where the next set of texture attribute data is located in the array
-	// note - the last parameter is the offset of where the data starts.
+	//copy indices into a buffer that OpenGL reads
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, texture_buffer);	
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texture_coordinates), texture_coordinates, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0); 
+	glEnableVertexAttribArray(2);
+	glBindVertexArray(0);
+
+
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(2);
-
-	// the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
-	 //glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// Unbind VAO - good idea to unbind buffers/arrays... 
-	// **EXCEPTION: DONT UNBIND THE EBO, keep it bound to the VAO
-	//unbind for later use in the program
 	glBindVertexArray(0);
 	#pragma endregion Buffer Objects
-	
-	//setup texture
-	#pragma region Texture
 
-	GLuint containerTexture;
-	GLuint smileyFaceTexture;
-	//
+	// Load and create a texture 
+	GLuint texture1;
+	GLuint texture2;
+	// ====================
 	// Texture 1
-	//
-	glGenTextures(1, &containerTexture);
-	//bind texture to 2D, so that any 2D manipulation will affect this texture
-	glBindTexture(GL_TEXTURE_2D, containerTexture);
-	//texture wrapping s,t,r (equivalent to x,y,z)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+	// ====================
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1); // All upcoming GL_TEXTURE_2D operations now have effect on our texture object
+											// Set our texture parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// texture filter
+	// Set texture filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// image setup
+	// Load, create texture and generate mipmaps
 	int width, height;
-	unsigned char* image = SOIL_load_image("images/container.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+	unsigned char* image = SOIL_load_image("images/blue.jpg", &width, &height, 0, SOIL_LOAD_RGB);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-	//mipmap generation
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(image);
-	glBindTexture(GL_TEXTURE_2D, 0); //unbind
-
-	//
-	// Texture 2
-	//
-	glGenTextures(1, &smileyFaceTexture);
-	glBindTexture(GL_TEXTURE_2D, smileyFaceTexture);
-	//texture wrapping
+	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
+									 // ===================
+									 // Texture 2
+									 // ===================
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	// Set our texture parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// texture filter
+	// Set texture filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	image = SOIL_load_image("images/awesomeface.png", &width, &height, 0, SOIL_LOAD_RGB);
+	// Load, create texture and generate mipmaps
+	image = SOIL_load_image("images/white.png", &width, &height, 0, SOIL_LOAD_RGB);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(image);
-	glBindTexture(GL_TEXTURE_2D, 0); //unbind
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-	#pragma endregion Texture
-
+	//loadAllTextures();
 	// Uncommenting this call will result in wireframe polygons.
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -254,19 +314,6 @@ int main()
 		//state using function
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//glUseProgram(shaderProgram);
-
-		//update uniform global value in fragment shader
-		/*	GLfloat timeValue = glfwGetTime();
-		GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
-		GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);*/
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, containerTexture);
-		//the 0 or 1 as the second parameter indicates which texture unit is active
-		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, smileyFaceTexture);
-		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);
 
 		//remember to use the linked shader program here, the use() method enabls the linked shader program
 		ourShader.Use();
@@ -291,7 +338,7 @@ int main()
 		
 		//glm::mat4 model = glm::rotate(model, glm::radians((GLfloat)glfwGetTime() * 50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 		//glm::mat4 model = glm::rotate(model, -15.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -4.0));
+		//glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, -4.0));
 		// Camera/View transformation
 		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		// projection matrix 
@@ -306,10 +353,17 @@ int main()
 		//the constant is how many matrices we want to send to the shader
 		//third parameter is if we want to transpose the matrix
 		//value_ptr is a fn that transforms matrices from GLM standard to OpenGL standard
-		glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+		//glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
-		
+
+		// Bind Textures using texture units
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);
 		//create transformations
 		//glm::mat4 trans;
 		
@@ -319,11 +373,24 @@ int main()
 		//GLuint transformLoc = glGetUniformLocation(ourShader.Program, "transform");
 		
 		//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
+		GLint count = 0;
 		//draw on context
 		glBindVertexArray(VAO);
+		for (GLuint i = 0; i < 27; i++)
+		{
+			
+			glm::mat4 model;
+			model = glm::translate(model, cubie_positions[i]);
+			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+			//now render each face
+			for (GLuint j = 0; j < 6; j++)
+			{
+				glDrawArrays(GL_TRIANGLES, 0, count);
+				count += 6;
+			}
+		}
 		//last parameter is # of vertices
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
@@ -340,8 +407,9 @@ int main()
 	#pragma region cleanup
 	//deallocate objects
 	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+	glDeleteBuffers(1, &vertex_buffer);
+	glDeleteBuffers(1, &texture_buffer);
+	//glDeleteBuffers(1, &EBO);
 	//clean up resources
 	glfwTerminate();
 	#pragma endregion cleanup

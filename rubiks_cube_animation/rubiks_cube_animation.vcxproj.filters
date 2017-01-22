@@ -57,10 +57,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="source\default.frag">
+    <None Include="source\shaders\default.frag">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="source\default.vs">
+    <None Include="source\shaders\default.vs">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
