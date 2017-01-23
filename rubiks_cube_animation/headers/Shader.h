@@ -13,7 +13,6 @@ class Shader
 public:
 	GLuint Program;
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
-	// Uses the current shader
 	void Use();
 };
 #endif
