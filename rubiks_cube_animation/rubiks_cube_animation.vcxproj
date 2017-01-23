@@ -154,7 +154,7 @@
     <Image Include="images\yellow.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="headers\Camera.cpp" />
+    <ClCompile Include="source\Camera.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\Texture.cpp" />
