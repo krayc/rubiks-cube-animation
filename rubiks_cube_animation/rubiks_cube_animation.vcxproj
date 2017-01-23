@@ -137,7 +137,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="headers\Camera.h" />
     <ClInclude Include="headers\Shader.h" />
+    <ClInclude Include="headers\Texture.h" />
+    <ClInclude Include="headers\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="images\awesomeface.png" />
@@ -151,8 +154,11 @@
     <Image Include="images\yellow.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="headers\Camera.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\Shader.cpp" />
+    <ClCompile Include="source\Texture.cpp" />
+    <ClCompile Include="source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source\shaders\default.frag" />
